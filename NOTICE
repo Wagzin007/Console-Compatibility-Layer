@@ -1,0 +1,10 @@
+# Avisos de terceiros
+
+## doctest
+
+- Uso: framework de testes C++.
+- Origem: pacote `doctest` fornecido pelo sistema; não é vendorado neste repositório.
+- Versão observada no ambiente de desenvolvimento: 2.5.2-1.
+- Licença: MIT (consulte os avisos distribuídos pelo pacote instalado).
+
+Não há outro código ou dependência de terceiros incluído nesta etapa.
