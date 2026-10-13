@@ -3,6 +3,6 @@
 
 #include "common/version.hpp"
 
-TEST_CASE("a versão do projeto é 0.0.1") {
-    CHECK(ccl::version() == "0.0.1");
+TEST_CASE("a versão do projeto corresponde à configuração do build") {
+    CHECK(ccl::version() == CCL_VERSION);
 }

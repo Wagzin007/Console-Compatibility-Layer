@@ -3,7 +3,7 @@
 namespace ccl {
 
 std::string_view version() noexcept {
-    return "0.0.1";
+    return CCL_VERSION;
 }
 
 } // namespace ccl
