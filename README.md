@@ -6,7 +6,7 @@ CCL é um projeto experimental de uma plataforma modular de emulação para Linu
 
 ## Build e testes
 
-Dependências: CMake 3.20 ou superior, compilador C++20 e o pacote `doctest` fornecido pelo sistema (no Arch Linux: `pacman -S doctest`).
+Dependências: CMake 3.21 ou superior, compilador C++20 e o pacote `doctest` fornecido pelo sistema (no Arch Linux: `pacman -S doctest`).
 
 ```sh
 cmake --preset debug-asan
@@ -17,8 +17,6 @@ ctest --preset debug-asan --output-on-failure
 cmake --preset release
 cmake --build --preset release
 ```
-
-O preset `debug-asan` habilita AddressSanitizer e UndefinedBehaviorSanitizer. Nesse preset, a opção `detect_leaks=0` desativa apenas LeakSanitizer, que encerra com erro neste ambiente quando executado sob `ptrace`; a detecção de leaks não é validada aqui. O preset `release` configura uma build otimizada.
 
 ## Uso
 
@@ -37,17 +35,17 @@ Este projeto não distribui ROMs, BIOS, ISOs ou outros assets proprietários. Us
 
 | Marco | Escopo planejado | Estado |
 |---|---|---|
-| M0 | Fundação, build e CLI mínimo | Em andamento |
-| M1 | Estrutura inicial do core GBA e leitura de imagem | Não iniciado |
-| M2 | CPU ARM7TDMI | Não iniciado |
-| M3 | Bus e mapa de memória GBA | Não iniciado |
-| M4 | Temporização e scheduler | Não iniciado |
-| M5 | PPU e framebuffer | Não iniciado |
-| M6 | Entrada e áudio | Não iniciado |
-| M7 | Saves e estado de execução | Não iniciado |
-| M8 | Interface host e integração de frontend | Não iniciado |
-| M9 | Testes de compatibilidade e desempenho | Não iniciado |
-| M10 | Preparação de versão | Não iniciado |
+| M0 | Fundação | Em andamento |
+| M1 | Loader/header e `ccl-run` headless | Não iniciado |
+| M2 | Bus e scheduler | Não iniciado |
+| M3 | Fatia vertical (ARM mínimo, modo 3 e hash de framebuffer) | Não iniciado |
+| M4 | CPU completa | Não iniciado |
+| M5 | Interrupções, timers, DMA, BIOS-HLE e PPU | Não iniciado |
+| M6 | SDL2 e áudio | Não iniciado |
+| M7 | Saves e RTC/GPIO | Não iniciado |
+| M8 | Registry/Detector | Não iniciado |
+| M9 | Launcher Qt | Não iniciado |
+| M10 | Benchmarks e decisão sobre JIT | Não iniciado |
 
 ## Decisões e perguntas abertas
 
