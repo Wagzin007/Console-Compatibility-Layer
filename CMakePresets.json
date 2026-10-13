@@ -1,25 +1,23 @@
 {
-  "version": 2,
+  "version": 3,
   "cmakeMinimumRequired": {
     "major": 3,
-    "minor": 20,
+    "minor": 21,
     "patch": 0
   },
   "configurePresets": [
     {
       "name": "debug-asan",
       "displayName": "Debug com ASan e UBSan",
-      "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/debug-asan",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-omit-frame-pointer -O1 -g"
+        "CMAKE_CXX_FLAGS": "-fsanitize=address,undefined -fno-sanitize-recover=undefined -fno-omit-frame-pointer -O1 -g"
       }
     },
     {
       "name": "release",
       "displayName": "Release",
-      "generator": "Unix Makefiles",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
