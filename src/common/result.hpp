@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cassert>
+#include <cstdlib>
 #include <variant>
 #include <utility>
 
@@ -21,27 +21,37 @@ public:
     [[nodiscard]] bool has_value() const noexcept { return value_.index() == 0; }
 
     [[nodiscard]] T& value() & {
-        assert(has_value());
+        if (!has_value()) {
+            std::abort();
+        }
         return *std::get_if<0>(&value_);
     }
 
     [[nodiscard]] const T& value() const& {
-        assert(has_value());
+        if (!has_value()) {
+            std::abort();
+        }
         return *std::get_if<0>(&value_);
     }
 
     [[nodiscard]] T&& value() && {
-        assert(has_value());
+        if (!has_value()) {
+            std::abort();
+        }
         return std::move(*std::get_if<0>(&value_));
     }
 
     [[nodiscard]] E& error() & {
-        assert(!has_value());
+        if (has_value()) {
+            std::abort();
+        }
         return *std::get_if<1>(&value_);
     }
 
     [[nodiscard]] const E& error() const& {
-        assert(!has_value());
+        if (has_value()) {
+            std::abort();
+        }
         return *std::get_if<1>(&value_);
     }
 

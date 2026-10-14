@@ -23,11 +23,21 @@ std::uint32_t read_u32_le(std::span<const std::uint8_t> bytes, std::size_t offse
         | (static_cast<std::uint32_t>(bytes[offset + 3]) << 24U);
 }
 
-std::string read_string(std::span<const std::uint8_t> bytes, std::size_t offset, std::size_t length) {
+std::string read_sanitized_code(
+    std::span<const std::uint8_t> bytes,
+    std::size_t offset,
+    std::size_t length,
+    bool& has_non_printable) {
     std::string result;
     result.reserve(length);
     for (std::size_t index = 0; index < length; ++index) {
-        result.push_back(static_cast<char>(bytes[offset + index]));
+        const auto byte = bytes[offset + index];
+        if (byte < 0x20 || byte > 0x7E) {
+            has_non_printable = true;
+            result.push_back('?');
+        } else {
+            result.push_back(static_cast<char>(byte));
+        }
     }
     return result;
 }
@@ -62,8 +72,10 @@ Result<RomHeader, Error> parse_header(std::span<const std::uint8_t> bytes) {
 
     RomHeader header;
     header.entry_instruction = read_u32_le(bytes, entry_offset);
-    header.game_code = read_string(bytes, game_code_offset, 4);
-    header.maker_code = read_string(bytes, maker_code_offset, 2);
+    bool game_code_has_non_printable = false;
+    bool maker_code_has_non_printable = false;
+    header.game_code = read_sanitized_code(bytes, game_code_offset, 4, game_code_has_non_printable);
+    header.maker_code = read_sanitized_code(bytes, maker_code_offset, 2, maker_code_has_non_printable);
     header.fixed_value = bytes[fixed_value_offset];
     header.unit_code = bytes[unit_code_offset];
     header.software_version = bytes[software_version_offset];
@@ -101,6 +113,12 @@ Result<RomHeader, Error> parse_header(std::span<const std::uint8_t> bytes) {
     }
     if (title_has_non_printable) {
         header.warnings.emplace_back("título contém bytes não ASCII imprimíveis");
+    }
+    if (game_code_has_non_printable) {
+        header.warnings.emplace_back("código do jogo contém bytes não imprimíveis");
+    }
+    if (maker_code_has_non_printable) {
+        header.warnings.emplace_back("código do fabricante contém bytes não imprimíveis");
     }
     if (bytes.size() % 4 != 0) {
         header.warnings.emplace_back("tamanho da ROM não é múltiplo de 4 bytes");

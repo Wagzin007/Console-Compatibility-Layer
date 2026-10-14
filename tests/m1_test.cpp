@@ -174,6 +174,42 @@ TEST_CASE("cada anomalia do cabeçalho gera apenas seu aviso") {
         CHECK(parsed.value().title == "AB?DEFGHIJKL");
     }
 
+    SUBCASE("código do jogo contém ESC") {
+        auto bytes = make_valid_rom();
+        bytes[0xAC] = 0x1B;
+        refresh_checksum(bytes);
+        const auto parsed = ccl::gba::parse_header(bytes);
+        REQUIRE(parsed.has_value());
+        REQUIRE(parsed.value().warnings.size() == 1);
+        CHECK(parsed.value().game_code == "?B12");
+        CHECK(has_warning(parsed.value(), "código do jogo contém bytes não imprimíveis"));
+    }
+
+    SUBCASE("código do fabricante contém BEL") {
+        auto bytes = make_valid_rom();
+        bytes[0xB0] = 0x07;
+        refresh_checksum(bytes);
+        const auto parsed = ccl::gba::parse_header(bytes);
+        REQUIRE(parsed.has_value());
+        REQUIRE(parsed.value().warnings.size() == 1);
+        CHECK(parsed.value().maker_code == "?Y");
+        CHECK(has_warning(parsed.value(), "código do fabricante contém bytes não imprimíveis"));
+    }
+
+    SUBCASE("NUL nos dois códigos vira ponto de interrogação") {
+        auto bytes = make_valid_rom();
+        bytes[0xAE] = 0x00;
+        bytes[0xB1] = 0x00;
+        refresh_checksum(bytes);
+        const auto parsed = ccl::gba::parse_header(bytes);
+        REQUIRE(parsed.has_value());
+        REQUIRE(parsed.value().warnings.size() == 2);
+        CHECK(parsed.value().game_code == "AB?2");
+        CHECK(parsed.value().maker_code == "X?");
+        CHECK(has_warning(parsed.value(), "código do jogo contém bytes não imprimíveis"));
+        CHECK(has_warning(parsed.value(), "código do fabricante contém bytes não imprimíveis"));
+    }
+
     SUBCASE("tamanho não é múltiplo de quatro") {
         auto bytes = make_valid_rom();
         bytes.push_back(0x00);
