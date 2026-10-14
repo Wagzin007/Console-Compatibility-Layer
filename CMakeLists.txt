@@ -23,19 +23,26 @@ add_library(ccl_gba STATIC
 target_include_directories(ccl_gba PUBLIC src)
 target_link_libraries(ccl_gba PUBLIC ccl_common)
 
-add_executable(ccl-run
+add_library(ccl_cli STATIC
     src/cli/cli.cpp
-    src/cli/main.cpp
 )
-target_link_libraries(ccl-run PRIVATE ccl_common ccl_gba)
+target_include_directories(ccl_cli PUBLIC src)
+target_link_libraries(ccl_cli PUBLIC ccl_common ccl_gba)
+
+add_executable(ccl-run src/cli/main.cpp)
+target_link_libraries(ccl-run PRIVATE ccl_cli)
 
 include(CTest)
 if(BUILD_TESTING)
     add_executable(ccl-tests
-        src/cli/cli.cpp
         tests/m1_test.cpp
         tests/version_test.cpp
     )
-    target_link_libraries(ccl-tests PRIVATE ccl_common ccl_gba doctest::doctest)
-    add_test(NAME ccl COMMAND ccl-tests)
+    target_link_libraries(ccl-tests PRIVATE ccl_cli doctest::doctest)
+    include(doctest OPTIONAL)
+    if(COMMAND doctest_discover_tests)
+        doctest_discover_tests(ccl-tests)
+    else()
+        add_test(NAME ccl COMMAND ccl-tests)
+    endif()
 endif()
