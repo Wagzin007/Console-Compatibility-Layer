@@ -2,7 +2,7 @@
 
 CCL é um projeto experimental de uma plataforma modular de emulação para Linux x86-64. O primeiro core planejado é o do Game Boy Advance.
 
-**Estado atual:** fundação M0 em andamento. Ainda não existe emulador: o programa atual apenas informa a versão e mostra a ajuda. Nenhum jogo ou ROM é carregado.
+**Estado atual:** M1 em andamento. `ccl-run info` lê uma ROM GBA local somente para exibir os metadados do cabeçalho. Ainda não existe emulador e nenhum jogo é executado.
 
 ## Build e testes
 
@@ -23,9 +23,10 @@ cmake --build --preset release
 ```sh
 ccl-run --version
 ccl-run --help
+ccl-run info caminho/para/arquivo.gba
 ```
 
-As opções acima são as únicas implementadas nesta etapa. O programa não carrega ROMs.
+`info` não modifica o arquivo. Cabeçalhos com anomalias conhecidas são exibidos com avisos; arquivos vazios, truncados ou acima de 32 MiB são rejeitados. O programa ainda não executa ROMs.
 
 ## Aviso legal
 
@@ -35,8 +36,8 @@ Este projeto não distribui ROMs, BIOS, ISOs ou outros assets proprietários. Us
 
 | Marco | Escopo planejado | Estado |
 |---|---|---|
-| M0 | Fundação | Em andamento |
-| M1 | Loader/header e `ccl-run` headless | Não iniciado |
+| M0 | Fundação | Concluído |
+| M1 | Loader/header e `ccl-run` headless | Em andamento |
 | M2 | Bus e scheduler | Não iniciado |
 | M3 | Fatia vertical (ARM mínimo, modo 3 e hash de framebuffer) | Não iniciado |
 | M4 | CPU completa | Não iniciado |
