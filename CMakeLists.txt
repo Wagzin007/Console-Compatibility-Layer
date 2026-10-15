@@ -18,6 +18,7 @@ target_include_directories(ccl_common PUBLIC src)
 target_compile_definitions(ccl_common PUBLIC CCL_VERSION="${PROJECT_VERSION}")
 
 add_library(ccl_gba STATIC
+    src/gba/bus.cpp
     src/gba/rom_header.cpp
 )
 target_include_directories(ccl_gba PUBLIC src)
@@ -36,6 +37,7 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(ccl-tests
         tests/m1_test.cpp
+        tests/m2_test.cpp
         tests/version_test.cpp
     )
     target_link_libraries(ccl-tests PRIVATE ccl_cli doctest::doctest)
