@@ -238,6 +238,26 @@ TEST_CASE("ciclos por largura, região, janela ROM e tipo sequencial são explí
     CHECK(bus.read8(0x0E000000).cycles == 5);
     CHECK(bus.read16(0x0E000000).cycles == 10);
     CHECK(bus.read32(0x0E000000).cycles == 20);
+
+    CHECK(bus.read32(0x02000000, AccessType::sequential).cycles == 6);
+    CHECK(bus.write8(0x02000000, 0) == 3);
+    CHECK(bus.write16(0x02000000, 0) == 3);
+    CHECK(bus.write32(0x02000000, 0) == 6);
+    CHECK(bus.write8(0x03000000, 0) == 1);
+    CHECK(bus.write16(0x03000000, 0) == 1);
+    CHECK(bus.write32(0x03000000, 0) == 1);
+    CHECK(bus.write8(0x04000000, 0) == 1);
+    CHECK(bus.write16(0x04000000, 0) == 1);
+    CHECK(bus.write32(0x04000000, 0) == 1);
+    CHECK(bus.write8(0x05000000, 0) == 1);
+    CHECK(bus.write16(0x05000000, 0) == 1);
+    CHECK(bus.write32(0x05000000, 0) == 2);
+    CHECK(bus.write8(0x06000000, 0) == 1);
+    CHECK(bus.write16(0x06000000, 0) == 1);
+    CHECK(bus.write32(0x06000000, 0) == 2);
+    CHECK(bus.write8(0x07000000, 0) == 1);
+    CHECK(bus.write16(0x07000000, 0) == 1);
+    CHECK(bus.write32(0x07000000, 0) == 1);
 }
 
 TEST_CASE("fuzz determinístico de leituras e escritas do bus não causa crash") {

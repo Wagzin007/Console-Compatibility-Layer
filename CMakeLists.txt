@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ccl VERSION 0.0.2 LANGUAGES CXX)
+project(ccl VERSION 0.0.3 LANGUAGES CXX)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 

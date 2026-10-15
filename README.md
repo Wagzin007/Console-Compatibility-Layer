@@ -45,7 +45,7 @@ Este projeto não distribui ROMs, BIOS, ISOs ou outros assets proprietários. Us
 |---|---|---|
 | M0 | Fundação | Concluído |
 | M1 | Loader/header e `ccl-run` headless | Concluído |
-| M2 | Bus e scheduler | Não iniciado |
+| M2 | Bus e scheduler | Em andamento |
 | M3 | Fatia vertical (ARM mínimo, modo 3 e hash de framebuffer) | Não iniciado |
 | M4 | CPU completa no CCL-C | Não iniciado |
 | M5 | Interrupções, timers, DMA, BIOS-HLE e PPU | Não iniciado |
