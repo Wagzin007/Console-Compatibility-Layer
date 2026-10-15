@@ -1,0 +1,7 @@
+# ADR 0011: Nomenclatura e CCL-G
+
+- **Contexto:** A arquitetura usa nomes consistentes para o Core e para o processamento gráfico compartilhado entre consoles.
+- **Decisão aceita:** CCL-C é o Core do Console Compatibility Layer e executa a lógica principal e a CPU do console-alvo, além de coordenar os subsistemas. Não existe um componente separado chamado CCL Core acima do CCL-C. CCL-G, informalmente Gummy, é o subsistema gráfico integrado ao CCL-C, não um substituto nem uma nova denominação para o Core. Gummy OpenGL é o primeiro backend do CCL-G; Gummy Vulkan é um backend futuro. O código atual `ccl_gba`, `ccl_common` e `ccl::gba` corresponde ao módulo GBA do CCL-C e não é renomeado por esta decisão.
+- **Pendências propostas:** (a) avaliar um backend de referência em software/nulo para testes determinísticos, pois a saída OpenGL pode variar entre drivers; (b) manter inicialmente um CCL-C com módulos por console e extrair componentes comuns somente quando o segundo console justificar; (c) separar adaptadores por console, infraestrutura compartilhada e backends, mantendo contexto OpenGL e janela no host via SDL2 e oferecendo opção de CMake para desativar OpenGL.
+- **Referência técnica:** GBATEK, seção “GBA Memory Map” e capítulo “GBA System Control”, https://problemkaputt.de/gbatek.htm.
+- **Status:** Aceita para a nomenclatura. Pendências registradas como propostas, sem decisão.
