@@ -20,6 +20,7 @@ target_compile_definitions(ccl_common PUBLIC CCL_VERSION="${PROJECT_VERSION}")
 add_library(ccl_gba STATIC
     src/gba/bus.cpp
     src/gba/rom_header.cpp
+    src/gba/scheduler.cpp
 )
 target_include_directories(ccl_gba PUBLIC src)
 target_link_libraries(ccl_gba PUBLIC ccl_common)

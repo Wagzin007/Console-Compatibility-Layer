@@ -2,6 +2,7 @@
 
 #include "gba/bus.hpp"
 #include "gba/rom_header.hpp"
+#include "gba/scheduler.hpp"
 #include "gba/timing.hpp"
 
 #include <array>
@@ -9,6 +10,12 @@
 #include <random>
 #include <string>
 #include <vector>
+
+#include <csignal>
+#include <cstdio>
+#include <sys/resource.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 namespace {
 
@@ -256,4 +263,68 @@ TEST_CASE("fuzz determinístico de leituras e escritas do bus não causa crash")
             break;
         }
     }
+}
+
+TEST_CASE("scheduler ordena eventos por ciclo e mantém FIFO em empates") {
+    ccl::gba::Scheduler scheduler;
+    const auto late = scheduler.schedule(20, {ccl::gba::SchedulerEventType::timer, 20});
+    const auto first = scheduler.schedule(10, {ccl::gba::SchedulerEventType::scanline, 1});
+    const auto second = scheduler.schedule(10, {ccl::gba::SchedulerEventType::dma, 2});
+    CHECK(late != first);
+    CHECK(first != second);
+    REQUIRE(scheduler.next_deadline().has_value());
+    CHECK(*scheduler.next_deadline() == 10);
+    CHECK(scheduler.pop_due(9).empty());
+
+    const auto due = scheduler.pop_due(10);
+    REQUIRE(due.size() == 2);
+    CHECK(due[0].handle == first);
+    CHECK(due[0].event.payload == 1);
+    CHECK(due[1].handle == second);
+    CHECK(due[1].event.payload == 2);
+    CHECK(scheduler.current_time() == 10);
+    CHECK(scheduler.next_deadline() == 20);
+}
+
+TEST_CASE("scheduler cancela handles e next_deadline vazio retorna nullopt") {
+    ccl::gba::Scheduler scheduler;
+    CHECK_FALSE(scheduler.next_deadline().has_value());
+    const auto cancelled = scheduler.schedule(5, {ccl::gba::SchedulerEventType::timer, 7});
+    CHECK(scheduler.cancel(cancelled));
+    CHECK_FALSE(scheduler.cancel(cancelled));
+    CHECK_FALSE(scheduler.next_deadline().has_value());
+}
+
+TEST_CASE("scheduler permite reagendar enquanto o chamador consome pop_due") {
+    ccl::gba::Scheduler scheduler;
+    static_cast<void>(scheduler.schedule(0, {ccl::gba::SchedulerEventType::scanline, 0}));
+    std::size_t event_count = 0;
+    for (std::uint64_t now = 0; now < ccl::gba::cycles_per_frame; now += ccl::gba::cycles_per_scanline) {
+        const auto due = scheduler.pop_due(now);
+        for (const auto& event : due) {
+            ++event_count;
+            static_cast<void>(scheduler.schedule(now + ccl::gba::cycles_per_scanline,
+                {ccl::gba::SchedulerEventType::scanline, event.event.payload + 1}));
+        }
+    }
+    CHECK(event_count == 228);
+    CHECK(scheduler.next_deadline() == ccl::gba::cycles_per_frame);
+}
+
+TEST_CASE("agendar no passado aborta explicitamente") {
+    const auto child = fork();
+    REQUIRE(child >= 0);
+    if (child == 0) {
+        const rlimit no_core{0, 0};
+        static_cast<void>(setrlimit(RLIMIT_CORE, &no_core));
+        static_cast<void>(std::freopen("/dev/null", "w", stderr));
+        ccl::gba::Scheduler scheduler;
+        static_cast<void>(scheduler.pop_due(10));
+        static_cast<void>(scheduler.schedule(9, {ccl::gba::SchedulerEventType::timer, 0}));
+        _exit(0);
+    }
+    int status = 0;
+    REQUIRE(waitpid(child, &status, 0) == child);
+    CHECK(WIFSIGNALED(status));
+    CHECK(WTERMSIG(status) == SIGABRT);
 }
