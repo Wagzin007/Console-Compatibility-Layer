@@ -1,6 +1,13 @@
 # CCL — Console Compatibility Layer
 
-CCL é um projeto experimental de uma plataforma modular de emulação para Linux x86-64. O primeiro core planejado é o do Game Boy Advance.
+CCL é um projeto experimental de uma plataforma modular de emulação para Linux x86-64; o primeiro módulo de console do CCL-C é o GBA.
+
+### Glossário
+
+- **CCL-C:** Core do projeto, que executa a lógica principal e a CPU do console-alvo e coordena os subsistemas.
+- **CCL-G (Gummy):** subsistema gráfico integrado ao CCL-C, separado em adaptadores por console, infraestrutura gráfica compartilhada e backends.
+- **Gummy OpenGL:** primeiro backend gráfico do CCL-G.
+- **Gummy Vulkan:** backend gráfico futuro do CCL-G.
 
 **Estado atual:** M1 concluído. `ccl-run info` lê uma ROM GBA local somente para exibir os metadados do cabeçalho. Ainda não existe emulador e nenhum jogo é executado.
 
@@ -38,9 +45,9 @@ Este projeto não distribui ROMs, BIOS, ISOs ou outros assets proprietários. Us
 |---|---|---|
 | M0 | Fundação | Concluído |
 | M1 | Loader/header e `ccl-run` headless | Concluído |
-| M2 | Bus e scheduler | Não iniciado |
+| M2 | Bus e scheduler | Concluído |
 | M3 | Fatia vertical (ARM mínimo, modo 3 e hash de framebuffer) | Não iniciado |
-| M4 | CPU completa | Não iniciado |
+| M4 | CPU completa no CCL-C | Não iniciado |
 | M5 | Interrupções, timers, DMA, BIOS-HLE e PPU | Não iniciado |
 | M6 | SDL2 e áudio | Não iniciado |
 | M7 | Saves e RTC/GPIO | Não iniciado |

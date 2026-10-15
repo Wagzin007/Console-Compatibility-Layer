@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ccl VERSION 0.0.2 LANGUAGES CXX)
+project(ccl VERSION 0.0.3 LANGUAGES CXX)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
@@ -18,7 +18,9 @@ target_include_directories(ccl_common PUBLIC src)
 target_compile_definitions(ccl_common PUBLIC CCL_VERSION="${PROJECT_VERSION}")
 
 add_library(ccl_gba STATIC
+    src/gba/bus.cpp
     src/gba/rom_header.cpp
+    src/gba/scheduler.cpp
 )
 target_include_directories(ccl_gba PUBLIC src)
 target_link_libraries(ccl_gba PUBLIC ccl_common)
@@ -36,6 +38,7 @@ include(CTest)
 if(BUILD_TESTING)
     add_executable(ccl-tests
         tests/m1_test.cpp
+        tests/m2_test.cpp
         tests/version_test.cpp
     )
     target_link_libraries(ccl-tests PRIVATE ccl_cli doctest::doctest)
